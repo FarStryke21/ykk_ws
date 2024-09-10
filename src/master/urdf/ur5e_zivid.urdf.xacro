@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot name="ur5e_zivid" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:arg name="sim" default="True" />
+	<xacro:property name="robot_base_height" value="0.009"/>
+
+    <gazebo>
+        <plugin filename="libgazebo_ros_control.so" name="gazebo_ros_control">
+            <robotNamespace>/ur5e_zivid</robotNamespace>
+        </plugin>
+    </gazebo>
+
+	<link name="world" />
+
+    <!-- <xacro:include filename="$(find denso_robot_descriptions)/metrology_description/urdf/metrology.urdf.xacro"/> -->
+    <xacro:include filename="$(find ur_description)/urdf/ur5e.xacro"/>
+
+	<!-- Join ur5e to world -->
+	<joint name="world_to_base" type="fixed">
+		<origin rpy="0 0 0" xyz="0 0 ${robot_base_height}"/>
+		<parent link="world"/>
+		<child link="base_link"/>
+    </joint>
+
+    <!-- Create camera instance --> 
+    <xacro:include filename="$(find master)/urdf/zivid_official_mount.urdf.xacro"/>
+
+</robot>
