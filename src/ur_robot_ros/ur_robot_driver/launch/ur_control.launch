@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <launch>
 
+  <!-- <arg name="robot_ns" default="" doc="Namespace for the robot nodes"/> -->
+
   <!-- GDB functionality -->
   <arg name="debug" default="false" doc="If set to true, will start the driver inside gdb" />
   <arg unless="$(arg debug)" name="launch_prefix" value="" />
@@ -36,6 +38,7 @@
   <arg name="use_spline_interpolation" default="true" doc="True if splines should be used as interpolation on the robot controller when forwarding trajectory, if false movej or movel commands are used"/>
 
   <!-- Load hardware interface -->
+  <!-- <node ns="$(arg robot_ns)" name="ur_hardware_interface" pkg="ur_robot_driver" type="ur_robot_driver_node" output="screen" launch-prefix="$(arg launch_prefix)" required="$(arg ur_hardware_interface_node_required)"> -->
   <node name="ur_hardware_interface" pkg="ur_robot_driver" type="ur_robot_driver_node" output="screen" launch-prefix="$(arg launch_prefix)" required="$(arg ur_hardware_interface_node_required)">
     <param name="robot_ip" type="str" value="$(arg robot_ip)"/>
     <param name="reverse_ip" value="$(arg reverse_ip)"/>
@@ -63,7 +66,7 @@
   </node>
 
   <!-- Starts socat to bridge the robot's tool communication interface to a local tty device -->
-  <node if="$(arg use_tool_communication)" name="ur_tool_communication_bridge" pkg="ur_robot_driver" type="tool_communication" respawn="false" output="screen">
+  <node if="$(arg use_tool_communication)" ns="$(arg robot_ns)" name="ur_tool_communication_bridge" pkg="ur_robot_driver" type="tool_communication" respawn="false" output="screen">
     <param name="robot_ip" value="$(arg robot_ip)"/>
     <param name="reverse_ip" value="$(arg reverse_ip)"/>
     <param name="reverse_port" type="int" value="$(arg reverse_port)"/>
@@ -82,7 +85,6 @@
   <!-- load other controller -->
   <node name="ros_control_stopped_spawner" pkg="controller_manager" type="spawner" respawn="false"
     output="screen" args="--stopped $(arg stopped_controllers) --timeout 600" unless="$(eval arg('stopped_controllers') == '')"/>
-
   <node name="controller_stopper" pkg="ur_robot_driver" type="controller_stopper_node" respawn="false" output="screen">
     <remap from="robot_running" to="ur_hardware_interface/robot_program_running"/>
     <rosparam param="consistent_controllers">

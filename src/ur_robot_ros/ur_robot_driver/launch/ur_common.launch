@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <launch>
+  <!-- <arg name="robot_ns" default="" doc="Namespace for the robot nodes"/> -->
   <arg name="debug" default="false" doc="Debug flag that will get passed on to ur_control.launch"/>
   <arg name="use_tool_communication" doc="On e-Series robots tool communication can be enabled with this argument"/>
   <arg name="controller_config_file" doc="Config file used for defining the ROS-Control controllers."/>
@@ -27,12 +28,16 @@
   <arg name="use_spline_interpolation" default="true" doc="True if splines should be used as interpolation on the robot controller when forwarding trajectory, if false movej or movel commands are used"/>
 
   <!-- robot model -->
+  <!-- <include ns="$(arg robot_ns)" file="$(arg robot_description_file)"> -->
   <include file="$(arg robot_description_file)">
     <arg name="kinematics_params" value="$(arg kinematics_config)"/>
   </include>
 
   <!-- Convert joint states to /tf tranforms -->
-  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  <!-- <node ns="$(arg robot_ns)" name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+    <param name="tf_prefix" value="$(arg tf_prefix)"/>
+  </node> -->
 
   <include file="$(find ur_robot_driver)/launch/ur_control.launch">
     <arg name="debug" value="$(arg debug)"/>
@@ -59,5 +64,6 @@
     <arg name="tool_tcp_port" value="$(arg tool_tcp_port)"/>
     <arg name="ur_hardware_interface_node_required" value="$(arg ur_hardware_interface_node_required)"/>
     <arg name="use_spline_interpolation" value="$(arg use_spline_interpolation)"/>
+    <!-- <arg name="robot_ns" value="$(arg robot_ns)"/> -->
   </include>
 </launch>

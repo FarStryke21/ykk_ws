@@ -11,7 +11,25 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  pcl_conversions
+  pcl_ros
+  sensor_msgs
+  message_generation
+  dynamic_reconfigure
+  zivid_camera
+  cv_bridge
+  image_transport
 )
+find_package(OpenCV REQUIRED)
+
+find_package(PCL 1.8 REQUIRED)
+include_directories(${PCL_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
+
+
+find_package(Boost REQUIRED COMPONENTS filesystem system)
+include_directories(${Boost_INCLUDE_DIRS})
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -72,6 +90,34 @@ find_package(catkin REQUIRED COMPONENTS
 #   DEPENDENCIES
 #   std_msgs
 # )
+add_service_files(
+  FILES
+  CaptureMeasurement.srv
+  GetMeasurement.srv
+  PublishAllMeasurements.srv
+  AlignPointClouds.srv
+  SavePointClouds.srv
+)
+
+generate_messages(
+  DEPENDENCIES
+  sensor_msgs
+)
+
+catkin_package(
+  # INCLUDE_DIRS include
+  # LIBRARIES depth_processing  # Uncomment this if you have a library named depth_processing
+  CATKIN_DEPENDS pcl_conversions pcl_ros sensor_msgs message_runtime roscpp cv_bridge image_transport
+  DEPENDS OpenCV
+  # DEPENDS system_lib  # Uncomment and specify if you have system dependencies
+)
+
+include_directories(
+  ${catkin_INCLUDE_DIRS}
+  ${PCL_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
+  # ${dynamic_reconfigure_PACKAGE_PATH}/cmake/cfgbuild.cmake
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -102,24 +148,12 @@ find_package(catkin REQUIRED COMPONENTS
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES master
-#  CATKIN_DEPENDS roscpp rospy std_msgs
-#  DEPENDS system_lib
-)
-
 ###########
 ## Build ##
 ###########
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(
-# include
-  ${catkin_INCLUDE_DIRS}
-)
-
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/master.cpp
@@ -204,3 +238,7 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+add_executable(depth_processor_zivid src/depth_processor_zivid.cpp)
+target_link_libraries(depth_processor_zivid ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${Boost_LIBRARIES} ${OpenCV_LIBS})
+add_dependencies(depth_processor_zivid ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(depth_processor_zivid ${PROJECT_NAME}_gencfg)
