@@ -1,0 +1,8 @@
+<launch>
+    <!-- Start joystick driver -->
+    <node pkg="joy" type="joy_node" name="joy_node"/>
+    
+    <!-- Start custom nodes -->
+    <node pkg="ur_teleop" type="joystick_node.py" name="joystick_controller" output="screen"/>
+    <node pkg="ur_teleop" type="robot_control.py" name="moveit_controller" output="screen"/>
+</launch>
