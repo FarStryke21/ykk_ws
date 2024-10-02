@@ -1,0 +1,53 @@
+<launch>
+    <arg name="robot_ip" default="192.168.1.172" />
+
+    <arg name="pipeline" default="ompl" />
+    <arg name="debug" default="false" />
+    <arg name="load_robot_description" default="false"/>
+    <arg name="moveit_controller_manager" default="ros_control" />
+    <arg name="fake_execution_type" default="interpolate" />
+    <arg name="use_gui" default="false" />
+    <arg name="use_rviz" default="true" />
+    
+    <include file="$(find ur_robot_driver)/launch/ur5e_bringup.launch">
+        <arg name="robot_ip" value="$(arg robot_ip)"/>
+        <arg name="controllers" value="joint_state_controller scaled_pos_joint_traj_controller speed_scaling_state_controller force_torque_sensor_controller"/>
+        <arg name="stopped_controllers" value="pos_joint_traj_controller joint_group_vel_controller" />
+    </include>
+
+    <param name="robot_description" command = "$(find xacro)/xacro --inorder $(find master)/urdf/ur5e_zivid.urdf.xacro" />
+
+    <include file="$(find ur5e_zivid_config)/launch/move_group.launch">
+        <arg name="allow_trajectory_execution" value="true"/>
+        <arg name="moveit_controller_manager" value="$(arg moveit_controller_manager)" />
+        <arg name="fake_execution_type" value="$(arg fake_execution_type)"/>
+        <arg name="info" value="true"/>
+        <arg name="debug" value="$(arg debug)"/>
+        <arg name="pipeline" value="$(arg pipeline)"/>
+        <arg name="load_robot_description" value="$(arg load_robot_description)"/>
+    </include>
+
+    <include file="$(find ur5e_zivid_config)/launch/moveit_rviz.launch">
+        <arg name="rviz_config" value="$(find ur5e_zivid_config)/launch/moveit.rviz"/>
+        <arg name="debug" value="$(arg debug)"/>
+    </include>
+
+    <!-- Launch Zivid Control -->
+    <node name="zivid_camera" pkg="zivid_camera" type="zivid_camera_node" ns="zivid_camera" output="screen">
+        <param type="string" name="frame_id" value="zivid_optical_center" />
+    </node>
+    <node name="load_zivid_settings_node" pkg="zivid_camera" type="load_config.py" output="screen">
+        <param name="file_path" value="$(find master)/config/camera_config/zivid_3D_capture.yml" />
+    </node>
+
+    <!-- Start Depth Processing Routine -->
+    <node pkg="master" type="depth_processor_zivid" name="depth_processor_zivid_cpp" output="screen">
+        <param name="use_voxel_filter" value="true" />
+        <param name="use_sor_filter" value="true" />
+        <param name="use_passthrough_filter" value="true" />
+        <param name="use_sac_registration" value="false" />
+    </node>
+
+    <node pkg="master" type="depth_service_gui_zivid.py" name="depth_gui" output="screen"/>
+    
+</launch>

@@ -189,7 +189,7 @@ public:
             std::string timestamp = ss.str();
 
             // Define the base directory and create experiments directory if it doesn't exist
-            boost::filesystem::path base_dir("/home/catkin_ws/experiments");
+            boost::filesystem::path base_dir("/home/catkin_ws/scans");
             if (!boost::filesystem::exists(base_dir))
             {
                 if (!boost::filesystem::create_directory(base_dir)) 
