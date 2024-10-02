@@ -30,7 +30,7 @@ class JoystickController:
         cmd = Twist()
         
         if joy_msg.buttons[6]:  # Linear mode
-            cmd.linear.x = self.apply_deadzone(joy_msg.axes[0], self.deadzone) * self.linear_scale
+            cmd.linear.x = -self.apply_deadzone(joy_msg.axes[0], self.deadzone) * self.linear_scale
             cmd.linear.y = self.apply_deadzone(joy_msg.axes[1], self.deadzone) * self.linear_scale
             cmd.linear.z = self.apply_deadzone(joy_msg.axes[3], self.deadzone) * self.linear_scale
             cmd.angular.x = 0
