@@ -1,32 +1,32 @@
 <?xml version="1.0"?>
 <launch>
-  <!-- MoveIt options -->
-  <arg name="pipeline" default="ompl" doc="Planning pipeline to use with MoveIt"/>
-  <arg name="robot_name" default="ur5e_zivid" />
-  <arg name="debug" default="false" />
-  <arg name="use_rviz" default="true" />
-  <!-- Gazebo options -->
-  <arg name="gazebo_gui" default="true" doc="Start Gazebo GUI"/>
-  <arg name="paused" default="true" doc="Start Gazebo paused"/>
-  <arg name="world_name" default="worlds/empty.world" doc="Gazebo world file"/>
-  <arg name="world_pose" default="-x 0 -y 0 -z 0 -R 0 -P 0 -Y 0" doc="Pose to spawn the robot at"/>
+    <!-- MoveIt options -->
+    <arg name="pipeline" default="ompl" doc="Planning pipeline to use with MoveIt"/>
+    <arg name="robot_name" default="ur5e_zivid" />
+    <arg name="debug" default="false" />
+    <arg name="use_rviz" default="true" />
+    <!-- Gazebo options -->
+    <arg name="gazebo_gui" default="true" doc="Start Gazebo GUI"/>
+    <arg name="paused" default="true" doc="Start Gazebo paused"/>
+    <arg name="world_name" default="worlds/empty.world" doc="Gazebo world file"/>
+    <arg name="world_pose" default="-x 0 -y 0 -z 0 -R 0 -P 0 -Y 0" doc="Pose to spawn the robot at"/>
 
-  <!-- Launch Gazebo and spawn the robot -->
-  <include file="$(dirname)/gazebo.launch" pass_all_args="true"/>
-   <!-- Load the controller parameters onto the parameter server -->
+    <!-- Launch Gazebo and spawn the robot -->
+    <include file="$(dirname)/gazebo.launch" pass_all_args="true"/>
+    <!-- Load the controller parameters onto the parameter server -->
 
-  <!-- Given the published joint states, publish tf for the robot links -->
-  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen">
-    <remap from="/joint_states" to="/$(arg robot_name)/joint_states" />
-  </node>
+    <!-- Given the published joint states, publish tf for the robot links -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen">
+      <remap from="/joint_states" to="/$(arg robot_name)/joint_states" />
+    </node>
 
-  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
-  <remap from="/joint_states" to="/$(arg robot_name)/joint_states"/>
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+    <remap from="/joint_states" to="/$(arg robot_name)/joint_states"/>
 
-  <include file="$(dirname)/ros_controllers.launch"/>
+    <include file="$(dirname)/ros_controllers.launch"/>
 
-  <!-- Launch MoveIt -->
-  <!-- Run the main MoveIt executable without trajectory execution (we do not have controllers configured by default) -->
+    <!-- Launch MoveIt -->
+    <!-- Run the main MoveIt executable without trajectory execution (we do not have controllers configured by default) -->
     <include file="$(dirname)/move_group.launch">
         <arg name="allow_trajectory_execution" value="true"/>
         <arg name="fake_execution" value="false"/>

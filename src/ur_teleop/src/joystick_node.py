@@ -18,8 +18,8 @@ class JoystickController:
         self.deadzone = 0.1
         
         # Scaling factors
-        self.linear_scale = 0.5  # Max linear velocity (m/s)
-        self.angular_scale = 1.0  # Max angular velocity (rad/s)
+        self.linear_scale = 2.0  # Max linear velocity (m/s)
+        self.angular_scale =2.0  # Max angular velocity (rad/s)
 
     def apply_deadzone(self, value, deadzone):
         if abs(value) < deadzone:
@@ -29,10 +29,10 @@ class JoystickController:
     def joy_callback(self, joy_msg):
         cmd = Twist()
         
-        if joy_msg.buttons[6]:  # Linear mode
+        if joy_msg.buttons[4]:  # Linear mode
             cmd.linear.x = -self.apply_deadzone(joy_msg.axes[0], self.deadzone) * self.linear_scale
             cmd.linear.y = self.apply_deadzone(joy_msg.axes[1], self.deadzone) * self.linear_scale
-            cmd.linear.z = self.apply_deadzone(joy_msg.axes[3], self.deadzone) * self.linear_scale
+            cmd.linear.z = self.apply_deadzone(joy_msg.axes[4], self.deadzone) * self.linear_scale
             cmd.angular.x = 0
             cmd.angular.y = 0
             cmd.angular.z = 0
@@ -42,7 +42,7 @@ class JoystickController:
             cmd.linear.z = 0
             cmd.angular.x = -self.apply_deadzone(joy_msg.axes[1], self.deadzone) * self.angular_scale
             cmd.angular.y = -self.apply_deadzone(joy_msg.axes[0], self.deadzone) * self.angular_scale
-            cmd.angular.z = self.apply_deadzone(joy_msg.axes[2], self.deadzone) * self.angular_scale
+            cmd.angular.z = self.apply_deadzone(joy_msg.axes[3], self.deadzone) * self.angular_scale
 
         # Apply smoothing
         for attr in ['linear', 'angular']:

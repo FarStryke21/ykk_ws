@@ -51,7 +51,7 @@ RUN apt-get update && apt-get install -y python3-tk
 # Update pip to >=20.3
 RUN pip install -U pip>=20.3
 
-RUN pip install --ignore-installed\
+RUN pip install --ignore-installed \
     open3d
 
 # Clean up
@@ -60,13 +60,13 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 # Update all packages
 RUN sudo apt update && sudo apt upgrade -y
 
+RUN apt-get install -y --fix-missing ros-${ROS_DISTRO}-moveit
 # Install ROS Packages
 RUN apt-get install -y \
     ros-${ROS_DISTRO}-ros-control \
     ros-${ROS_DISTRO}-realsense2-camera \
     ros-${ROS_DISTRO}-realsense2-description \
     ros-${ROS_DISTRO}-catkin \
-    ros-${ROS_DISTRO}-moveit \
     ros-${ROS_DISTRO}-moveit-visual-tools \
     ros-${ROS_DISTRO}-rosserial \
     ros-${ROS_DISTRO}-rosserial-arduino \
@@ -77,8 +77,8 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-ur-client-library \
     ros-${ROS_DISTRO}-pass-through-controllers \
     ros-${ROS_DISTRO}-trac-ik \
-    ros-${ROS_DISTRO}-rqt-joint-trajectory-controller
-
+    ros-${ROS_DISTRO}-rqt-joint-trajectory-controller \
+    ros-${ROS_DISTRO}-joy
 
 # Rosdep update
 RUN rosdep update
