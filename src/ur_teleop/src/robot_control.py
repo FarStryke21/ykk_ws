@@ -13,7 +13,9 @@ class MoveItController:
         rospy.init_node('moveit_controller')
         moveit_commander.roscpp_initialize(sys.argv)
         self.robot = moveit_commander.RobotCommander()
-        self.group = moveit_commander.MoveGroupCommander("arm")
+        planning_grp = "arm"
+        # planning_grp = "manipulator"
+        self.group = moveit_commander.MoveGroupCommander(planning_grp)
         self.cmd_sub = rospy.Subscriber('joystick_commands', Twist, self.cmd_callback, queue_size=1)
         self.group.set_pose_reference_frame("world")
         self.group.set_max_velocity_scaling_factor(0.5)
@@ -32,8 +34,10 @@ class MoveItController:
         rospy.loginfo("Starting pose: {}".format(self.get_current_pose()))
 
     def get_current_pose(self):
+        base_frame = "world"
+        # base_frame = "base_link"
         try:
-            (trans, rot) = self.tf_listener.lookupTransform("world", self.group.get_end_effector_link(), rospy.Time(0))
+            (trans, rot) = self.tf_listener.lookupTransform(base_frame, self.group.get_end_effector_link(), rospy.Time(0))
             current_pose = Pose()
             current_pose.position.x = trans[0]
             current_pose.position.y = trans[1]

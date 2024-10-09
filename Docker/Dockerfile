@@ -20,13 +20,19 @@ RUN curl -s -L https://nvidia.github.io/libnvidia-container/gpgkey | apt-key add
     distribution=$(. /etc/os-release;echo $ID$VERSION_ID) && \
     curl -s -L https://nvidia.github.io/libnvidia-container/$distribution/libnvidia-container.list | tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
 
+# Support for Space Mouse
+RUN apt-get update && apt-get install -y \
+    spacenavd \
+    libspnav-dev \
+    x11-apps
+    
 # Zivid Install
 RUN apt-get update && apt-get install --assume-yes \
     wget \
     ocl-icd-libopencl1
 
 RUN mkdir -p /etc/OpenCL/vendors && \
-    echo "libnvidia-opencl.so.1" > /etc/OpenCL/vendors/nvidia.icd
+    echo "libnvidia-Screenshot from 2024-10-09 13-47-45opencl.so.1" > /etc/OpenCL/vendors/nvidia.icd
 
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
@@ -70,15 +76,17 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-moveit-visual-tools \
     ros-${ROS_DISTRO}-rosserial \
     ros-${ROS_DISTRO}-rosserial-arduino \
-    ros-${ROS_DISTRO}-ros-controllers \
     ros-${ROS_DISTRO}-industrial-robot-status-interface \
+    ros-${ROS_DISTRO}-ros-controllers \
     ros-${ROS_DISTRO}-scaled-controllers \
     ros-${ROS_DISTRO}-ur-msgs \
     ros-${ROS_DISTRO}-ur-client-library \
     ros-${ROS_DISTRO}-pass-through-controllers \
     ros-${ROS_DISTRO}-trac-ik \
     ros-${ROS_DISTRO}-rqt-joint-trajectory-controller \
-    ros-${ROS_DISTRO}-joy
+    ros-${ROS_DISTRO}-joy \
+    ros-${ROS_DISTRO}-spacenav-node \
+    ros-${ROS_DISTRO}-moveit-servo
 
 # Rosdep update
 RUN rosdep update

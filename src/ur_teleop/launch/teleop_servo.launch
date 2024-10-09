@@ -1,0 +1,15 @@
+<launch>
+
+    <arg name="servo_config" default="$(find ur_teleop)/config/servo_config.yaml"/>
+
+    <!-- Add the planning_environment -->
+    <node pkg="ur_teleop" type="planning_environment.py" name="planning_environment"/>
+    <!-- Start joystick driver -->
+    <node pkg="joy" type="joy_node" name="joy_node"/>
+    <!-- Start custom nodes -->
+    <node pkg="ur_teleop" type="joystick_node.py" name="joystick_controller" output="screen"/>
+    
+    <node name="servo_server" pkg="moveit_servo" type="servo_server" output="screen" >
+        <rosparam command="load" file="$(arg servo_config)"/>
+    </node>
+</launch>
