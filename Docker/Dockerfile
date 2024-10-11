@@ -25,6 +25,8 @@ RUN apt-get update && apt-get install -y \
     spacenavd \
     libspnav-dev \
     x11-apps
+
+RUN spacenavd
     
 # Zivid Install
 RUN apt-get update && apt-get install --assume-yes \

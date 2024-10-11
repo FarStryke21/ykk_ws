@@ -30,7 +30,7 @@ class CageAdder:
 
     def add_cage_walls(self):
         cage_height = 1.0
-        cage_size = 1.5
+        cage_size = 1.2
         wall_thickness = 0.01
 
         # Add walls

@@ -1,0 +1,16 @@
+<launch>
+    <arg name="servo_config" default="$(find ur_teleop)/config/spacemouse_servo_config.yaml"/>
+
+    <!-- Add the planning_environment -->
+    <node pkg="ur_teleop" type="planning_environment.py" name="planning_environment" output="screen"/>
+    
+    <!-- Start space mouse driver -->
+    <node name="spacenav_node" pkg="spacenav_node" type="spacenav_node" />
+    <node name="spacemouse_controller" pkg="ur_teleop" type="spacemouse_node.py" output="screen" />
+    <!-- <node name="spacenav_to_twist" pkg="moveit_servo" type="spacenav_to_twist" output="screen" /> -->
+    
+    <node name="servo_server" pkg="moveit_servo" type="servo_server" output="screen" >
+        <!-- <remap from="/planning_scene_world" to="/move_group/monitored_planning_scene" /> -->
+        <rosparam command="load" file="$(arg servo_config)"/>
+    </node>
+</launch>
