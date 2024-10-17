@@ -26,7 +26,8 @@ RUN apt-get update && apt-get install -y \
     libspnav-dev \
     x11-apps
 
-RUN spacenavd
+# Might need to run this again but...
+RUN spacenavd 
     
 # Zivid Install
 RUN apt-get update && apt-get install --assume-yes \
@@ -60,7 +61,9 @@ RUN apt-get update && apt-get install -y python3-tk
 RUN pip install -U pip>=20.3
 
 RUN pip install --ignore-installed \
-    open3d
+    open3d \
+    zmp \
+    spacenavigator
 
 # Clean up
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
