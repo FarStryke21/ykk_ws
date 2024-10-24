@@ -582,7 +582,7 @@ void ZividCamera::publishPointCloudXYZRGBA(const std_msgs::Header& header, const
   msg->fields.push_back(createPointField("x", 0, sensor_msgs::PointField::FLOAT32, 1));
   msg->fields.push_back(createPointField("y", 4, sensor_msgs::PointField::FLOAT32, 1));
   msg->fields.push_back(createPointField("z", 8, sensor_msgs::PointField::FLOAT32, 1));
-  msg->fields.push_back(createPointField("rgba", 12, sensor_msgs::PointField::FLOAT32, 1));
+  msg->fields.push_back(createPointField("rgba", 12, sensor_msgs::PointField::UINT32, 1));
   msg->is_dense = false;
 
   // Note that the "rgba" field is actually byte order "bgra" on little-endian systems. For this

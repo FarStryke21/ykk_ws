@@ -18,7 +18,7 @@
     <node name="camera_stream_publisher" pkg="ur_teleop" type="camera_server.py" output="screen"/>
 
     <!-- Launch Zivid Control -->
-    <!-- <node name="zivid_camera" pkg="zivid_camera" type="zivid_camera_node" ns="zivid_camera" output="screen">
+    <node name="zivid_camera" pkg="zivid_camera" type="zivid_camera_node" ns="zivid_camera" output="screen">
         <param type="string" name="frame_id" value="wrist_3_link" />
     </node>
     <node name="load_zivid_settings_node" pkg="zivid_camera" type="load_config.py" output="screen">
@@ -30,6 +30,7 @@
         <param name="use_sor_filter" value="true" />
         <param name="use_passthrough_filter" value="true" />
         <param name="use_sac_registration" value="false" />
-    </node> -->
+    </node>
+    <!-- <node name="depth_processor" pkg="master" type="pointcloud_processor.py" output="screen" /> -->
 
 </launch>

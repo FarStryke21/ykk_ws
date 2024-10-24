@@ -1,0 +1,2 @@
+timestamp,frame_id,child_frame_id,translation_x,translation_y,translation_z,rotation_x,rotation_y,rotation_z,rotation_w
+1.7298e+09,base_link,wrist_3_link,0.287051,0.342438,0.453769,0.999218,0.0124032,-0.0088555,-0.03648

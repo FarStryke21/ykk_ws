@@ -11,8 +11,8 @@ from cv_bridge import CvBridge
 CLIENT_ADDRESS = "tcp://*:5556"
 
 def flip_image(frame):
-    # return cv2.flip(cv2.flip(frame, 0), 1)  # 0 means flipping around the x-axis (vertical flip)
-    return cv2.flip(frame, 1)
+    return cv2.flip(cv2.flip(frame, 0), 1)  # 0 means flipping around the x-axis (vertical flip)
+    # return cv2.flip(frame, 1)
 
 def main():
     rospy.init_node('camera_stream_publisher')
@@ -43,7 +43,7 @@ def main():
             ret, frame = camera.read()
             if ret:
                 # Flip the image vertically
-                # frame = flip_image(frame)
+                frame = flip_image(frame)
                 
                 # Send over ZMQ
                 _, buffer = cv2.imencode('.jpg', frame)

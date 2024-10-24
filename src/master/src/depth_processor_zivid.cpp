@@ -15,6 +15,7 @@
 #include <pcl/registration/ia_ransac.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/fpfh.h>
+#include <pcl/io/ply_io.h>
 
 #include <std_srvs/Trigger.h>
 #include <std_srvs/Empty.h>
@@ -45,7 +46,7 @@ class DepthProcessor
 {
 public:
      
-    DepthProcessor() : nh_("~"), current_cloud_(new pcl::PointCloud<pcl::PointXYZ>())
+    DepthProcessor() : nh_("~"), current_cloud_(new pcl::PointCloud<pcl::PointXYZRGBA>())
     {   
         cloud_sub_ = nh_.subscribe("/zivid_camera/points/xyzrgba", 1, &DepthProcessor::pointCloudCallback, this);
         depth_image_sub_ = nh_.subscribe("/zivid_camera/depth/image", 1, &DepthProcessor::depthImageCallback, this);
@@ -139,7 +140,7 @@ public:
         if (!measurements_.empty())
         {
             // Create an empty combined point cloud
-            pcl::PointCloud<pcl::PointXYZ>::Ptr combined_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+            pcl::PointCloud<pcl::PointXYZRGBA>::Ptr combined_cloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
 
             // Iterate through all measurements and append them to the combined_cloud
             for (size_t i = 0; i < measurements_.size(); i++)
@@ -253,10 +254,10 @@ public:
             for (size_t i = 0; i < measurements_.size(); ++i) 
             {
                 std::stringstream file_name;
-                file_name << std::setw(3) << std::setfill('0') << i << ".pcd";
+                file_name << std::setw(3) << std::setfill('0') << i << ".ply";
                 std::string file_path = (pointclouds_dir / file_name.str()).string();
 
-                if (pcl::io::savePCDFile(file_path, *measurements_[i]) == -1)
+                if (pcl::io::savePLYFile(file_path, *measurements_[i]) == -1)
                 {
                     res.success = false;
                     res.message = "Failed to save point cloud: " + file_name.str();
@@ -357,9 +358,9 @@ public:
 
     void pointCloudCallback(const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
     {
-        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+        pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
         pcl::fromROSMsg(*cloud_msg, *cloud);
-
+        ROS_INFO("Converted to PCL format");
         tf::StampedTransform transform;
 
         try
@@ -372,6 +373,7 @@ public:
             
             sensor_msgs::PointCloud2 output;
             pcl::toROSMsg(*current_cloud_, output);
+            ROS_INFO("Converted to PCL format");
             output.header = cloud_msg->header;  // Use the same header as the input cloud for consistency
             output.header.frame_id = "base_link";
             cloud_pub_.publish(output); 
@@ -386,7 +388,7 @@ public:
         // ROS_INFO("Current Cloud Published");
         if (current_cloud_) // Check if there's any data
         {   
-            pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_copy(new pcl::PointCloud<pcl::PointXYZ>(*current_cloud_));
+            pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_copy(new pcl::PointCloud<pcl::PointXYZRGBA>(*current_cloud_));
             measurements_.push_back(cloud_copy);  
         }
         
@@ -414,8 +416,8 @@ private:
 
     ros::ServiceClient capture_client_;
 
-    pcl::PointCloud<pcl::PointXYZ>::Ptr current_cloud_;
-    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> measurements_;
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr current_cloud_;
+    std::vector<pcl::PointCloud<pcl::PointXYZRGBA>::Ptr> measurements_;
     std::vector<tf::StampedTransform> transforms_;
     std::vector<cv::Mat> rgb_images;
     
