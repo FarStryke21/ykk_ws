@@ -1,0 +1,16 @@
+<launch>
+    <arg name="servo_config" default="$(find ur_teleop)/config/headse++++++++++++++++t_servo_config.yaml"/>
+
+    <!-- Add the planning_environment -->
+    <!-- <node pkg="ur_teleop" type="planning_environment.py" name="planning_environment" output="screen"/> -->
+    
+    <!-- Start space mouse driver -->
+    <node name="remote_joy_publisher" pkg="ur_teleop" type="headset_teleop_server.py" output="screen"/>
+    <!-- <node name="spacemouse_controller" pkg="ur_teleop" type="spacemouse_node.py" output="screen" /> -->
+
+    <!-- <node name="servo_server" pkg="moveit_servo" type="servo_server" output="screen" >
+        <rosparam command="load" file="$(arg servo_config)"/>
+    </node> -->
+
+    <node name="camera_stream_publisher" pkg="ur_teleop" type="camera_server.py" output="screen"/>
+</launch>

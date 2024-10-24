@@ -34,8 +34,8 @@
 
 #include <zivid_camera/Capture.h>
 
-// Global Fixed Frame: world
-// Camera optical frame: zivid_optical_center
+// Global Fixed Frame: base_link
+// Camera optical frame: wrist_3_link
 // point cloud topic: /zivid_camera/points/xyzrgba
 // Depth topic: /zivid_camera/depth/image
 // RGB Topic: /zivid_camera/color/image_color
@@ -115,7 +115,7 @@ public:
             pcl::toROSMsg(*measurements_.back(), output);
 
             // Publish the point cloud on the retrieved_cloud topic
-            output.header.frame_id = "world";
+            output.header.frame_id = "base_link";
             retrieved_cloud_pub_.publish(output);
             
             // Set the success flag and message for the service response
@@ -151,7 +151,7 @@ public:
             // Convert the combined point cloud to a ROS message
             sensor_msgs::PointCloud2 output;
             pcl::toROSMsg(*combined_cloud, output);
-            output.header.frame_id = "world";  // We'll use the world frame since it's a combined cloud
+            output.header.frame_id = "base_link";  // We'll use the base_link frame since it's a combined cloud
 
             // Publish the combined point cloud on the combined_cloud_pub_ topic
             combined_cloud_pub_.publish(output);
@@ -364,7 +364,7 @@ public:
 
         try
         {
-            tf_listener_->lookupTransform("world", "zivid_optical_center", ros::Time(0), transform);
+            tf_listener_->lookupTransform("base_link", "wrist_3_link", ros::Time(0), transform);
             pcl_ros::transformPointCloud(*cloud, *current_cloud_, transform);
 
             // Push the transform to the transforms vector
@@ -373,7 +373,7 @@ public:
             sensor_msgs::PointCloud2 output;
             pcl::toROSMsg(*current_cloud_, output);
             output.header = cloud_msg->header;  // Use the same header as the input cloud for consistency
-            output.header.frame_id = "world";
+            output.header.frame_id = "base_link";
             cloud_pub_.publish(output); 
         }
         catch (tf::TransformException &ex)

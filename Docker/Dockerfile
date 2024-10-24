@@ -35,7 +35,7 @@ RUN apt-get update && apt-get install --assume-yes \
     ocl-icd-libopencl1
 
 RUN mkdir -p /etc/OpenCL/vendors && \
-    echo "libnvidia-Screenshot from 2024-10-09 13-47-45opencl.so.1" > /etc/OpenCL/vendors/nvidia.icd
+    echo "libnvidia-opencl.so.1" > /etc/OpenCL/vendors/nvidia.icd
 
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
@@ -62,7 +62,7 @@ RUN pip install -U pip>=20.3
 
 RUN pip install --ignore-installed \
     open3d \
-    zmp \
+    pyzmq \
     spacenavigator
 
 # Clean up

@@ -3,6 +3,7 @@
 import rospy
 import zmq
 import cv2
+
 import numpy as np
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
@@ -10,7 +11,8 @@ from cv_bridge import CvBridge
 CLIENT_ADDRESS = "tcp://*:5556"
 
 def flip_image(frame):
-    return cv2.flip(cv2.flip(frame, 0), 1)  # 0 means flipping around the x-axis (vertical flip)
+    # return cv2.flip(cv2.flip(frame, 0), 1)  # 0 means flipping around the x-axis (vertical flip)
+    return cv2.flip(frame, 1)
 
 def main():
     rospy.init_node('camera_stream_publisher')
@@ -29,17 +31,19 @@ def main():
     rospy.loginfo("Publishing camera data on ROS topic: /camera/image_raw")
     
     # Setup camera capture (adjust parameters as needed)
-    cap = cv2.VideoCapture(0)
-    
+    camera = cv2.VideoCapture(0)
+    camera.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc('M', 'J', 'P', 'G'))
+    camera.set(cv2.CAP_PROP_FRAME_WIDTH,1280)
+    camera.set(cv2.CAP_PROP_FRAME_HEIGHT,720)
     rate = rospy.Rate(30)  # Adjust rate as needed
     
     while not rospy.is_shutdown():
         try:
             # Capture frame
-            ret, frame = cap.read()
+            ret, frame = camera.read()
             if ret:
                 # Flip the image vertically
-                frame = flip_image(frame)
+                # frame = flip_image(frame)
                 
                 # Send over ZMQ
                 _, buffer = cv2.imencode('.jpg', frame)
@@ -55,7 +59,7 @@ def main():
         except Exception as e:
             rospy.logerr(f"An error occurred: {e}")
 
-    cap.release()
+    camera.release()
     socket_send.close()
     context.term()
 

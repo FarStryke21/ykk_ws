@@ -3,6 +3,7 @@
 import rospy
 from sensor_msgs.msg import Joy
 from geometry_msgs.msg import TwistStamped
+from std_srvs.srv import Trigger
 
 class SpaceMouseController:
     def __init__(self):
@@ -27,6 +28,11 @@ class SpaceMouseController:
         # Set up timer for continuous command publishing
         self.publish_rate = 500  # Hz
         self.timer = rospy.Timer(rospy.Duration(1.0/self.publish_rate), self.publish_command)
+
+        # Service clients for button presses
+        self.button_states = [False, False]  # Initialize button states
+        self.service1 = rospy.ServiceProxy('/depth_processor_zivid_cpp/capture_measurement', Trigger)
+        self.service2 = rospy.ServiceProxy('/depth_processor_zivid_cpp/save_all_measurements', Trigger)
 
     def apply_deadzone(self, value, deadzone):
         if abs(value) < deadzone:
@@ -58,6 +64,24 @@ class SpaceMouseController:
 
         self.current_cmd = cmd
 
+        # Check button presses and call services
+        for i, button_state in enumerate(joy_msg.buttons[:2]):  # Only check first two buttons
+            if button_state and not self.button_states[i]:
+                self.call_service(i)
+            self.button_states[i] = button_state
+
+    def call_service(self, button_index):
+        try:
+            if button_index == 0:
+                rospy.loginfo("Capturing Measurement!")
+                response = self.service1()
+            elif button_index == 1:
+                rospy.loginfo("Saving Captured Measurements!")
+                response = self.service2()
+            rospy.loginfo(f"Service response: {response.success}")
+        except rospy.ServiceException as e:
+            rospy.logerr(f"Service call failed: {e}")
+            
     def publish_command(self, event):
         self.current_cmd.header.stamp = rospy.Time.now()
         self.cmd_pub.publish(self.current_cmd)

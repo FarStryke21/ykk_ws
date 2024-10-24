@@ -1,4 +1,5 @@
 <launch>
+
     <arg name="servo_config" default="$(find ur_teleop)/config/spacemouse_servo_config.yaml"/>
 
     <!-- Add the planning_environment -->
@@ -15,4 +16,20 @@
     </node>
 
     <node name="camera_stream_publisher" pkg="ur_teleop" type="camera_server.py" output="screen"/>
+
+    <!-- Launch Zivid Control -->
+    <!-- <node name="zivid_camera" pkg="zivid_camera" type="zivid_camera_node" ns="zivid_camera" output="screen">
+        <param type="string" name="frame_id" value="wrist_3_link" />
+    </node>
+    <node name="load_zivid_settings_node" pkg="zivid_camera" type="load_config.py" output="screen">
+        <param name="file_path" value="$(find master)/config/camera_config/zivid_3D_capture.yml" />
+    </node>
+
+    <node pkg="master" type="depth_processor_zivid" name="depth_processor_zivid_cpp" output="screen">
+        <param name="use_voxel_filter" value="true" />
+        <param name="use_sor_filter" value="true" />
+        <param name="use_passthrough_filter" value="true" />
+        <param name="use_sac_registration" value="false" />
+    </node> -->
+
 </launch>
